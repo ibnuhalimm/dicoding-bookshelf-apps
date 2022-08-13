@@ -11,6 +11,9 @@ const inputBookYear = document.getElementById('inputBookYear');
 const inputBookIsComplete = document.getElementById('inputBookIsComplete');
 const buttonBookSubmit = document.getElementById('bookSubmit');
 
+const formSearchBook = document.getElementById('searchBook');
+const searchBookTitle = document.getElementById('searchBookTitle');
+
 
 inputBookIsComplete.addEventListener('change', function () {
     const spanElement = buttonBookSubmit.getElementsByTagName('span')[0];
@@ -50,6 +53,14 @@ function newBook(title, author, year, isComplete = false) {
         'isComplete': isComplete
     };
 }
+
+
+formSearchBook.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    bookTitle = searchBookTitle.value;
+    renderAllBooks(bookTitle);
+});
 
 
 /**
@@ -100,14 +111,20 @@ function makeBookItemTemplate(bookObject = {}) {
 /**
  * Render the books
  */
-function renderAllBooks() {
-    const booksData = getBooksDataFromStorage();
+function renderAllBooks(bookTitle = null) {
+    let booksData = getBooksDataFromStorage();
 
     const completeBookshelfList = document.getElementById('completeBookshelfList');
     completeBookshelfList.innerHTML = '';
 
     const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
     incompleteBookshelfList.innerHTML = '';
+
+    if (bookTitle !== null && bookTitle.trim() !== '') {
+        booksData = booksData.filter(function(book) {
+            return book.title.toLowerCase().includes(bookTitle);
+        });
+    }
 
     for (const book of booksData) {
         const bookElement = makeBookItemTemplate(book);
